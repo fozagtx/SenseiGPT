@@ -2,10 +2,11 @@
 
 import { useChat } from "@ai-sdk/react";
 import { ArrowUp, Copy, Bot, User, Wrench, Brain, Code2 } from "lucide-react";
-import React, { memo } from "react";
+import React, { memo, forwardRef } from "react";
 import {
   ChatContainerContent,
   ChatContainerRoot,
+  type ChatContainerRootProps,
 } from "@/components/ui/chat-container";
 import { DotsLoader } from "@/components/ui/loader";
 import {
@@ -182,6 +183,15 @@ function ChatInterface() {
   const [messages, setMessages] = React.useState<any[]>([]);
   const [input, setInput] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  React.useEffect(() => {
+    scrollToBottom();
+  }, [messages, isLoading]);
 
   const onSubmit = async () => {
     if (!input.trim() || isLoading) return;
@@ -211,7 +221,7 @@ function ChatInterface() {
       const assistantMessage = {
         id: Date.now() + 1,
         role: "assistant",
-        content: data.content || "Sorry, I couldn't process your request.",
+        content: data.content || "Sorry, Sendesk couldn't process your request at this time.",
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -221,7 +231,7 @@ function ChatInterface() {
         id: Date.now() + 2,
         role: "assistant",
         content:
-          "Sorry, there was an error processing your message. Please try again.",
+          "Sorry, Sendesk encountered an error processing your message. Please try again.",
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -231,7 +241,9 @@ function ChatInterface() {
 
   return (
     <div className="flex min-h-[600px] max-h-[80vh] flex-col">
-      <ChatContainerRoot className="relative flex-1 space-y-0 overflow-y-auto">
+      <ChatContainerRoot
+        className="relative flex-1 space-y-0 overflow-y-auto"
+      >
         <ChatContainerContent className="space-y-12 px-4 py-12">
           {messages?.map((message, index) => {
             const isLastMessage = index === messages.length - 1;
@@ -245,6 +257,7 @@ function ChatInterface() {
           })}
 
           {isLoading && <LoadingMessage />}
+          <div ref={messagesEndRef} />
         </ChatContainerContent>
       </ChatContainerRoot>
 
@@ -258,7 +271,7 @@ function ChatInterface() {
         >
           <div className="flex flex-col">
             <PromptInputTextarea
-              placeholder="Ask anything"
+              placeholder="How can Sendesk help you today?"
               className="min-h-[44px] pt-3 pl-4 text-base leading-[1.3] sm:text-base md:text-base"
             />
 

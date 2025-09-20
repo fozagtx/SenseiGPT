@@ -1,7 +1,5 @@
 import ChatInterface from "@/components/blocks/chat";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { BookOpen } from "lucide-react";
+import { Brain } from "lucide-react";
 
 export default function Home() {
   return (
@@ -9,13 +7,12 @@ export default function Home() {
       <div className="container mx-auto py-8">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-4 mb-4">
-            <h1 className="text-3xl text-black font-bold">SenseiGPT</h1>
-            <Link href="/knowledge">
-              <Button variant="outline" size="sm">
-                <BookOpen className="w-4 h-4 mr-2" />
-                Knowledge Base
-              </Button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600">
+                <Brain className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-3xl text-black font-bold">Sendesk</h1>
+            </div>
           </div>
         </div>
 

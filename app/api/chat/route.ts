@@ -105,6 +105,7 @@ export async function POST(req: Request) {
       headers: sensayHeaders,
       body: JSON.stringify(sensayBody),
     });
+
     const duration = Date.now() - startTime;
 
     console.log(
@@ -113,27 +114,10 @@ export async function POST(req: Request) {
 
     // Handle HTTP errors
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error(
-        `[Sensay API] HTTP Error: ${response.status} ${response.statusText}`,
-        errorText,
-      );
-
-      // Return appropriate error message based on status code
-      let errorMessage = "Customer support service is temporarily unavailable";
-      if (response.status === 401 || response.status === 403) {
-        errorMessage = "Authentication error - please try again later";
-      } else if (response.status === 429) {
-        errorMessage = "Service is busy - please try again in a moment";
-      } else if (response.status >= 500) {
-        errorMessage = "Customer support service is experiencing issues";
-      }
-
+      console.error(`[Sensay API] HTTP Error: ${response.status}`);
       return new Response(
         JSON.stringify({
-          error: errorMessage,
-          code: "SENSAY_API_ERROR",
-          status: response.status,
+          error: "Sendesk is temporarily unavailable. Please try again later.",
         }),
         { status: 502, headers: { "Content-Type": "application/json" } },
       );
@@ -151,9 +135,7 @@ export async function POST(req: Request) {
       console.error(`[Sensay API] API Error:`, sensayData.error);
       return new Response(
         JSON.stringify({
-          error: "Unable to process your request at this time",
-          code: "SENSAY_PROCESSING_ERROR",
-          details: sensayData.error,
+          error: "Sendesk is unable to process your request at this time",
         }),
         { status: 500, headers: { "Content-Type": "application/json" } },
       );
@@ -164,7 +146,7 @@ export async function POST(req: Request) {
       sensayData.content ||
       sensayData.response ||
       sensayData.message ||
-      "I'm here to help! Could you please provide more details about how I can assist you?";
+      "Hello! I'm Sendesk, your customer support assistant. How can I help you today?";
 
     // Return successful response
     return new Response(
@@ -183,24 +165,11 @@ export async function POST(req: Request) {
       },
     );
   } catch (error) {
-    console.error("[Chat API] Unexpected error:", error);
-
-    // Handle different types of errors
-    let errorMessage = "An unexpected error occurred";
-    let errorCode = "INTERNAL_ERROR";
-
-    if (error instanceof TypeError && error.message.includes("fetch")) {
-      errorMessage = "Unable to connect to customer support service";
-      errorCode = "NETWORK_ERROR";
-    } else if (error instanceof SyntaxError) {
-      errorMessage = "Invalid response from customer support service";
-      errorCode = "PARSE_ERROR";
-    }
+    console.error("[Chat API] Error:", error);
 
     return new Response(
       JSON.stringify({
-        error: errorMessage,
-        code: errorCode,
+        error: "Sendesk encountered an error. Please try again.",
         timestamp: new Date().toISOString(),
       }),
       {
